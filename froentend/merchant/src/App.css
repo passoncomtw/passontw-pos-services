@@ -1,0 +1,17 @@
+/* 通用樣式調整 */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+/* 處理輸入框在移動設備上的外觀 */
+input, select, textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0.375rem;
+}

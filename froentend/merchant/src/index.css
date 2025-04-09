@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-900;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md text-white font-medium transition-colors duration-200;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-700 hover:bg-blue-800;
+  }
+  
+  .btn-secondary {
+    @apply bg-blue-500 hover:bg-blue-600;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700;
+  }
+  
+  .btn-warning {
+    @apply bg-orange-600 hover:bg-orange-700;
+  }
+  
+  .btn-accent {
+    @apply bg-red-600 hover:bg-red-700;
+  }
+  
+  .card {
+    @apply bg-white p-4 rounded-lg shadow-md;
+  }
+  
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-700;
+  }
+}
