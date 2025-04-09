@@ -1,7 +1,8 @@
 import { ReactNode, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
+import { logoutRequest } from '../../store/reducers/authReducer';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -10,7 +11,9 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   // 從 Redux store 獲取認證狀態
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
@@ -26,9 +29,18 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleLogout = () => {
-    // 登出邏輯
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    dispatch(logoutRequest());
+    setShowLogoutConfirm(false);
     navigate('/login');
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
   };
 
   // 如果未認證，重定向到登入頁面
@@ -39,6 +51,30 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="flex h-screen bg-gray-100">
+      {/* 確認登出對話框 */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-xl max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold mb-4">確認登出</h2>
+            <p className="mb-6">您確定要登出系統嗎？</p>
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={handleLogoutCancel}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+              >
+                取消
+              </button>
+              <button 
+                onClick={handleLogoutConfirm}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+              >
+                確定登出
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 側邊欄 */}
       <div 
         className={`bg-blue-800 text-white ${
@@ -81,8 +117,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             </div>
           )}
           <div
-            className="flex items-center p-4 hover:bg-blue-700 cursor-pointer"
-            onClick={handleLogout}
+            className="flex items-center p-4 hover:cursor-pointer"
+            onClick={handleLogoutClick}
           >
             <span className="text-xl mr-3">🚪</span>
             {isSidebarOpen && <span>登出</span>}
@@ -137,8 +173,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 <p className="text-sm text-gray-300">使用者: {user?.name}</p>
               </div>
               <div
-                className="flex items-center p-4 hover:bg-blue-700 cursor-pointer"
-                onClick={handleLogout}
+                className="flex items-center p-4 hover:bg-red-700 cursor-pointer"
+                onClick={handleLogoutClick}
               >
                 <span className="text-xl mr-3">🚪</span>
                 <span>登出</span>
