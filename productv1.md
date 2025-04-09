@@ -22,7 +22,7 @@
 
 ## 專案概述
 
-本專案旨在開發一套針對餐飲業的POS（銷售點）系統，第一階段專注於單一店家的基礎功能實現，同時在架構設計上預留多店家擴展彈性。系統分為後台管理界面和店家前端操作界面，提供菜單管理、訂單處理和出單功能，以提升餐飲業經營效率。
+本專案旨在開發一套針對餐飲業的POS（銷售點）系統，第一階段專注於單一店家的基礎功能實現，同時在架構設計上預留多店家擴展彈性。系統分為後台管理界面和店家前端操作界面，提供菜單管理、訂單處理、出單功能和交班管理，以提升餐飲業經營效率。
 
 **參考產品**：Maifood (https://www.maifood.com.tw/)
 
@@ -80,6 +80,14 @@
    - 透過 CP-Q3X 感熱式出單機列印收據
    - 廚房出單與客人收據分離
    - 收據格式設定（預留店家品牌化選項）
+
+5. **交班功能**
+   - 記錄班次開始和結束時間
+   - 班次期間訂單統計
+   - 班次營業額統計
+   - 班次現金管理（初始金額、結束金額）
+   - 交班報表生成與列印
+   - 員工交接事項記錄
 
 ## 技術架構
 
@@ -161,6 +169,7 @@
 
 2. **店家前端界面**
    - **框架**: React
+   - **CSS框架**: Tailwind CSS
    - **狀態管理**: Redux/Context API
    - **類型系統**: TypeScript
    - **測試**: Jest
@@ -237,6 +246,7 @@
    total_amount: DECIMAL(10,2)
    payment_method: VARCHAR(50)
    created_by: UUID (FK to users)
+   shift_id: UUID (FK to shifts)
    created_at: TIMESTAMP
    updated_at: TIMESTAMP
    ```
@@ -266,6 +276,22 @@
    updated_at: TIMESTAMP
    ```
 
+   **班次表(shifts)**
+   ```
+   shift_id: UUID (PK)
+   tenant_id: UUID (FK to tenants)
+   start_time: TIMESTAMP
+   end_time: TIMESTAMP
+   start_user_id: UUID (FK to users)
+   end_user_id: UUID (FK to users)
+   start_cash_amount: DECIMAL(10,2)
+   end_cash_amount: DECIMAL(10,2)
+   notes: TEXT
+   status: VARCHAR(50) [active, closed]
+   created_at: TIMESTAMP
+   updated_at: TIMESTAMP
+   ```
+
 2. **多租戶設計**
    - 使用Schema隔離不同店家數據
    - 或通過tenant_id欄位進行軟隔離
@@ -283,6 +309,7 @@
    - 打印任務: `printer.job`
    - 用戶活動: `user.activity`
    - 系統事件: `system.event`
+   - 班次變更: `shift.changed`
 
 ### 緩存策略
 
@@ -295,6 +322,7 @@
    - 用戶會話: TTL 24小時
    - 活躍訂單: TTL 4小時
    - 系統配置: TTL 1小時
+   - 活躍班次: TTL 12小時
 
 3. **緩存失效策略**
    - 寫操作時主動失效相關緩存
@@ -407,6 +435,7 @@
 #### 後台管理界面
 
 **視覺風格**
+- 使用Material Dashboard 2 React框架
 - 簡潔商務型設計
 - Material Design扁平化風格
 - 留白適當，減少視覺雜訊
@@ -428,6 +457,7 @@
 #### 店家前端界面
 
 **視覺風格**
+- 使用React + Tailwind CSS
 - 觸控友好型設計
 - 大尺寸交互元素
 - 清晰視覺層級
@@ -495,7 +525,7 @@
 ## 第一階段實施計劃
 
 ### 階段目標
-完成單一店家基礎POS系統，包括後台管理和店家前端，支持基本的點餐、結帳和出單功能。
+完成單一店家基礎POS系統，包括後台管理和店家前端，支持基本的點餐、結帳、出單和交班功能。
 
 ### 時間規劃
 總計12週，分為以下階段：
@@ -530,6 +560,7 @@
 4. 結帳功能
 5. 出單功能
 6. 基本訂單管理
+7. 交班功能
 
 ### 延後實施功能
 1. 高級報表功能
