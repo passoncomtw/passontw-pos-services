@@ -19,24 +19,21 @@ import {
   Alert,
   Switch,
   FormControlLabel,
-  Grid as MuiGrid,
-  SelectChangeEvent,
-  Tooltip,
-  IconButton,
   FormHelperText,
-  InputAdornment
+  InputAdornment,
+  IconButton,
+  Tooltip,
+  SelectChangeEvent,
 } from '@mui/material';
 import {
-  Add as AddIcon,
   Refresh as RefreshIcon,
   RestaurantMenu as MenuIcon,
   Category as CategoryIcon,
   LocalOffer as PriceIcon,
   Image as ImageIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon,
   AddAPhoto as AddPhotoIcon,
-  Alert as AlertIcon
+  Warning as WarningIcon
 } from '@mui/icons-material';
 import { Table, Column } from '../../components/Table';
 import { MenuItem as MenuItemType, Category as CategoryType } from '../../types';
@@ -306,7 +303,7 @@ const Menu: React.FC = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name as string]: value
     }));
   };
 
@@ -396,9 +393,8 @@ const Menu: React.FC = () => {
         setSuccessMessage('菜單項目新增成功！');
       }
 
-      // 關閉對話框並重置表單
+      // 關閉對話框
       setOpen(false);
-      resetForm();
     } catch (error) {
       console.error('保存菜單項目錯誤:', error);
       setErrorMessage('操作失敗，請重試');
@@ -519,10 +515,10 @@ const Menu: React.FC = () => {
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ pt: 3, pb: 2 }}>
-          <MuiGrid container spacing={2}>
-            <MuiGrid item xs={12} md={6}>
-              <MuiGrid container spacing={2}>
-                <MuiGrid item xs={12}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <TextField
                     fullWidth
                     label="名稱"
@@ -532,59 +528,54 @@ const Menu: React.FC = () => {
                     error={!!formErrors.name}
                     helperText={formErrors.name}
                     size="small"
-                    sx={{ mb: 2 }}
                     InputProps={{
                       startAdornment: (
                         <MenuIcon color="action" sx={{ mr: 1, fontSize: 20 }} />
                       ),
                     }}
                   />
-                </MuiGrid>
-                <MuiGrid item xs={12} sm={6}>
-                  <FormControl fullWidth size="small" sx={{ mb: 2 }} error={!!formErrors.category_id}>
-                    <InputLabel id="category-label">分類</InputLabel>
-                    <Select
-                      labelId="category-label"
-                      name="category_id"
-                      value={formData.category_id}
-                      onChange={handleSelectChange}
-                      label="分類"
-                      startAdornment={
-                        <CategoryIcon color="action" sx={{ mr: 1, fontSize: 20 }} />
-                      }
-                    >
-                      {categories.map(category => (
-                        <MenuItem key={category.category_id} value={category.category_id}>
-                          {category.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {formErrors.category_id && (
-                      <FormHelperText>{formErrors.category_id}</FormHelperText>
-                    )}
-                  </FormControl>
-                </MuiGrid>
-                <MuiGrid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="價格"
-                    name="price"
-                    type="number"
-                    value={formData.price || ''}
-                    onChange={handleInputChange}
-                    error={!!formErrors.price}
-                    helperText={formErrors.price}
-                    size="small"
-                    sx={{ mb: 2 }}
-                    InputProps={{
-                      startAdornment: (
-                        <PriceIcon color="action" sx={{ mr: 1, fontSize: 20 }} />
-                      ),
-                      endAdornment: <InputAdornment position="end">NT$</InputAdornment>,
-                    }}
-                  />
-                </MuiGrid>
-                <MuiGrid item xs={12}>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <FormControl fullWidth size="small" error={!!formErrors.category_id} sx={{ flex: '1 1 150px' }}>
+                      <InputLabel id="category-label">分類</InputLabel>
+                      <Select
+                        labelId="category-label"
+                        name="category_id"
+                        value={formData.category_id}
+                        onChange={handleSelectChange}
+                        label="分類"
+                        startAdornment={
+                          <CategoryIcon color="action" sx={{ mr: 1, fontSize: 20 }} />
+                        }
+                      >
+                        {categories.map(category => (
+                          <MenuItem key={category.category_id} value={category.category_id}>
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {formErrors.category_id && (
+                        <FormHelperText>{formErrors.category_id}</FormHelperText>
+                      )}
+                    </FormControl>
+                    <TextField
+                      fullWidth
+                      label="價格"
+                      name="price"
+                      type="number"
+                      value={formData.price || ''}
+                      onChange={handleInputChange}
+                      error={!!formErrors.price}
+                      helperText={formErrors.price}
+                      size="small"
+                      sx={{ flex: '1 1 150px' }}
+                      InputProps={{
+                        startAdornment: (
+                          <PriceIcon color="action" sx={{ mr: 1, fontSize: 20 }} />
+                        ),
+                        endAdornment: <InputAdornment position="end">NT$</InputAdornment>,
+                      }}
+                    />
+                  </Box>
                   <TextField
                     fullWidth
                     label="描述"
@@ -594,11 +585,8 @@ const Menu: React.FC = () => {
                     size="small"
                     multiline
                     rows={4}
-                    sx={{ mb: 2 }}
                     placeholder="輸入商品描述、特色或成分說明..."
                   />
-                </MuiGrid>
-                <MuiGrid item xs={12}>
                   <FormControlLabel
                     control={
                       <Switch
@@ -619,88 +607,88 @@ const Menu: React.FC = () => {
                       </Box>
                     }
                   />
-                </MuiGrid>
-              </MuiGrid>
-            </MuiGrid>
-            <MuiGrid item xs={12}>
-              <Box sx={{ 
-                border: '1px solid #e0e0e0', 
-                borderRadius: 1, 
-                p: 2,
-                height: '100%',
-                display: 'flex', 
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Typography variant="subtitle2" sx={{ mb: 2, color: 'text.secondary' }}>
-                  商品圖片
-                </Typography>
-                
-                {formData.image_url ? (
-                  <Box sx={{ position: 'relative', width: '100%', mb: 2 }}>
-                    <img
-                      src={formData.image_url}
-                      alt="商品預覽"
-                      style={{ 
+                </Box>
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <Box sx={{ 
+                  border: '1px solid #e0e0e0', 
+                  borderRadius: 1, 
+                  p: 2,
+                  height: '100%',
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Typography variant="subtitle2" sx={{ mb: 2, color: 'text.secondary' }}>
+                    商品圖片
+                  </Typography>
+                  
+                  {formData.image_url ? (
+                    <Box sx={{ position: 'relative', width: '100%', mb: 2 }}>
+                      <img
+                        src={formData.image_url}
+                        alt="商品預覽"
+                        style={{ 
+                          width: '100%', 
+                          height: 200, 
+                          objectFit: 'cover',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <IconButton
+                        size="small"
+                        sx={{ 
+                          position: 'absolute', 
+                          top: 8, 
+                          right: 8,
+                          bgcolor: 'background.paper',
+                          '&:hover': { bgcolor: 'error.light', color: 'white' }
+                        }}
+                        onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  ) : (
+                    <Box 
+                      sx={{ 
                         width: '100%', 
                         height: 200, 
-                        objectFit: 'cover',
-                        borderRadius: '8px'
+                        bgcolor: '#f5f5f5',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 1,
+                        mb: 2
                       }}
-                    />
-                    <IconButton
-                      size="small"
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 8, 
-                        right: 8,
-                        bgcolor: 'background.paper',
-                        '&:hover': { bgcolor: 'error.light', color: 'white' }
-                      }}
-                      onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
                     >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                ) : (
-                  <Box 
-                    sx={{ 
-                      width: '100%', 
-                      height: 200, 
-                      bgcolor: '#f5f5f5',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 1,
-                      mb: 2
+                      <ImageIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+                      <Typography variant="body2" color="text.secondary">
+                        尚未上傳圖片
+                      </Typography>
+                    </Box>
+                  )}
+                  
+                  <TextField
+                    fullWidth
+                    label="圖片網址"
+                    name="image_url"
+                    value={formData.image_url}
+                    onChange={handleInputChange}
+                    size="small"
+                    placeholder="輸入圖片網址"
+                    InputProps={{
+                      startAdornment: (
+                        <AddPhotoIcon color="action" sx={{ mr: 1, fontSize: 20 }} />
+                      ),
                     }}
-                  >
-                    <ImageIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
-                      尚未上傳圖片
-                    </Typography>
-                  </Box>
-                )}
-                
-                <TextField
-                  fullWidth
-                  label="圖片網址"
-                  name="image_url"
-                  value={formData.image_url}
-                  onChange={handleInputChange}
-                  size="small"
-                  placeholder="輸入圖片網址"
-                  InputProps={{
-                    startAdornment: (
-                      <AddPhotoIcon color="action" sx={{ mr: 1, fontSize: 20 }} />
-                    ),
-                  }}
-                />
+                  />
+                </Box>
               </Box>
-            </MuiGrid>
-          </MuiGrid>
+            </Box>
+          </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
           <Button 
@@ -785,7 +773,7 @@ const Menu: React.FC = () => {
             alignItems: 'center', 
             gap: 1 
           }}>
-            <DeleteIcon fontSize="small" /> 刪除菜單項目將可能影響關聯的訂單記錄
+            <WarningIcon fontSize="small" /> 刪除菜單項目將可能影響關聯的訂單記錄
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>

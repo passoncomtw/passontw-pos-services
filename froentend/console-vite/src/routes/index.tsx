@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import MainLayout from '../layouts/MainLayout';
+import { CircularProgress, Box } from '@mui/material';
 
-// 頁面組件
-import Login from '../pages/Login';
-import Dashboard from '../pages/Dashboard';
-import Users from '../pages/Users';
-import Menu from '../pages/Menu';
-import Orders from '../pages/Orders';
-import Shifts from '../pages/Shifts';
+// 使用 React.lazy 動態導入頁面組件
+const Login = lazy(() => import('../pages/Login'));
+const Dashboard = lazy(() => import('../pages/Dashboard'));
+const Users = lazy(() => import('../pages/Users'));
+const Menu = lazy(() => import('../pages/Menu'));
+const Orders = lazy(() => import('../pages/Orders'));
+const Shifts = lazy(() => import('../pages/Shifts'));
+
+// 載入中組件
+const Loading = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+    }}
+  >
+    <CircularProgress />
+  </Box>
+);
 
 // 路由路徑常數
 export const ROUTES = {
@@ -52,31 +67,33 @@ const mainRoutes: RouteConfig[] = [
 
 const AppRoutes: React.FC = () => {
   return (
-    <Routes>
-      {/* 登入路由 */}
-      <Route path={ROUTES.LOGIN} element={<Login />} />
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        {/* 登入路由 */}
+        <Route path={ROUTES.LOGIN} element={<Login />} />
 
-      {/* 受保護的路由 */}
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <MainLayout />
-          </PrivateRoute>
-        }
-      >
-        {mainRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path === ROUTES.DASHBOARD ? '' : route.path}
-            element={route.element}
-          />
-        ))}
-      </Route>
+        {/* 受保護的路由 */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <MainLayout />
+            </PrivateRoute>
+          }
+        >
+          {mainRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path === ROUTES.DASHBOARD ? '' : route.path}
+              element={route.element}
+            />
+          ))}
+        </Route>
 
-      {/* 404 重定向 */}
-      <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
-    </Routes>
+        {/* 404 重定向 */}
+        <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+      </Routes>
+    </Suspense>
   );
 };
 

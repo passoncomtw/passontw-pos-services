@@ -7,14 +7,14 @@ import {
   DialogActions,
   Button,
   Typography,
-  Grid,
   Chip,
   Divider,
   List,
   ListItem,
   ListItemText,
+  Stack,
 } from '@mui/material';
-import { Table } from '../../components/Table';
+import { Table, Column } from '../../components/Table';
 
 interface OrderItem {
   item_id: string;
@@ -34,33 +34,34 @@ interface Order {
   payment_method: string;
   created_at: string;
   items: OrderItem[];
+  [key: string]: unknown;
 }
 
 const Orders: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
 
-  const columns = [
+  const columns: Column<Order>[] = [
     { id: 'order_number', label: '訂單編號', minWidth: 130 },
     {
       id: 'order_type',
       label: '用餐方式',
       minWidth: 100,
-      format: (value: string) => (value === 'dine_in' ? '內用' : '外帶'),
+      format: (value: unknown) => ((value as string) === 'dine_in' ? '內用' : '外帶'),
     },
     {
       id: 'table_number',
       label: '桌號',
       minWidth: 80,
-      format: (value: string) => value || '-',
+      format: (value: unknown) => (value as string) || '-',
     },
     {
       id: 'status',
       label: '狀態',
       minWidth: 100,
-      format: (value: string) => (
+      format: (value: unknown) => (
         <Chip
-          label={value === 'completed' ? '已完成' : '已取消'}
-          color={value === 'completed' ? 'success' : 'error'}
+          label={(value as string) === 'completed' ? '已完成' : '已取消'}
+          color={(value as string) === 'completed' ? 'success' : 'error'}
           size="small"
         />
       ),
@@ -70,19 +71,19 @@ const Orders: React.FC = () => {
       label: '金額',
       minWidth: 100,
       align: 'right' as const,
-      format: (value: number) => `NT$ ${value.toLocaleString()}`,
+      format: (value: unknown) => `NT$ ${(value as number).toLocaleString()}`,
     },
     {
       id: 'payment_method',
       label: '付款方式',
       minWidth: 100,
-      format: (value: string) => (value === 'cash' ? '現金' : '其他'),
+      format: (value: unknown) => ((value as string) === 'cash' ? '現金' : '其他'),
     },
     {
       id: 'created_at',
       label: '建立時間',
       minWidth: 170,
-      format: (value: string) => new Date(value).toLocaleString(),
+      format: (value: unknown) => new Date(value as string).toLocaleString(),
     },
   ];
 
@@ -153,24 +154,26 @@ const Orders: React.FC = () => {
           訂單詳情 - {selectedOrder?.order_number}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">
-                用餐方式
-              </Typography>
-              <Typography variant="body1">
-                {selectedOrder?.order_type === 'dine_in' ? '內用' : '外帶'}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="textSecondary">
-                桌號
-              </Typography>
-              <Typography variant="body1">
-                {selectedOrder?.table_number || '-'}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ flex: '1 1 45%', minWidth: '150px' }}>
+                <Typography variant="body2" color="textSecondary">
+                  用餐方式
+                </Typography>
+                <Typography variant="body1">
+                  {selectedOrder?.order_type === 'dine_in' ? '內用' : '外帶'}
+                </Typography>
+              </Box>
+              <Box sx={{ flex: '1 1 45%', minWidth: '150px' }}>
+                <Typography variant="body2" color="textSecondary">
+                  桌號
+                </Typography>
+                <Typography variant="body1">
+                  {selectedOrder?.table_number || '-'}
+                </Typography>
+              </Box>
+            </Box>
+            <Box>
               <Divider sx={{ my: 2 }} />
               <Typography variant="subtitle2" gutterBottom>
                 訂單內容
@@ -195,8 +198,8 @@ const Orders: React.FC = () => {
                   NT$ {selectedOrder?.total_amount.toLocaleString()}
                 </Typography>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>關閉</Button>
