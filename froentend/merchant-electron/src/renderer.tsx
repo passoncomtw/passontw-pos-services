@@ -7,15 +7,13 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './components/App';
+import { createRoot } from 'react-dom/client';
+import App from './App';
 import './index.css';
 
-// 使用舊版 ReactDOM.render 方法
-// @ts-ignore - 忽略 TypeScript 錯誤，因為我們知道這樣可以工作
-ReactDOM.render(
-  <App />,
-  document.getElementById('app')
-);
+// 使用 React 18 的 createRoot API
+const container = document.getElementById('app');
+const root = createRoot(container!);
+root.render(<App />);
 
 console.log('React 渲染已初始化'); 

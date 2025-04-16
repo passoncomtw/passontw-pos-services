@@ -42,6 +42,8 @@ const createWindow = (): void => {
       contextIsolation: !isDevelopment,
       // 開發環境中禁用沙箱，生產環境中啟用
       sandbox: !isDevelopment,
+      // 確保 HashRouter 能夠正常工作
+      webSecurity: !isDevelopment,
     },
   });
 
@@ -82,6 +84,11 @@ const createWindow = (): void => {
   try {
     console.log('嘗試載入 Webpack 入口點:', MAIN_WINDOW_WEBPACK_ENTRY);
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    
+    // 監聽 hash 變化，確保 HashRouter 正常運作
+    mainWindow.webContents.on('did-navigate-in-page', (event, url) => {
+      console.log('頁面內部導航:', url);
+    });
   } catch (err) {
     console.error('載入 URL 時發生錯誤:', err);
     
